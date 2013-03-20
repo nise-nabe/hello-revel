@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/mrjones/oauth"
 	"github.com/nise-nabe/hello-revel/app/models"
 	"github.com/robfig/revel"
@@ -21,6 +22,26 @@ type Application struct {
 }
 
 func (c Application) Index() revel.Result {
+	user := getUser()
+	if user.AccessToken != nil {
+		resp, err := TWITTER.Get(
+			"https://api.twitter.com/1.1/statuses/home_timeline.json",
+			map[string]string{"count": "10"},
+			user.AccessToken)
+		if err != nil {
+			revel.ERROR.Println(err)
+			return c.Render()
+		}
+		defer resp.Body.Close()
+
+		// Extract the mention text.
+		tweets := []struct {
+			Text string `json:text`
+		}{}
+		err = json.NewDecoder(resp.Body).Decode(&tweets)
+
+		return c.Render(tweets)
+	}
 	return c.Render()
 }
 

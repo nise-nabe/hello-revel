@@ -1,8 +1,27 @@
 {{set . "title" "Home"}}
 {{template "header.html" .}}
 
-<h1>Your Application Is Ready</h1>
-<a href="/auth">Authentication</a>
+<div class="container">
+	<h1>Your Application Is Ready</h1>
+	<a href="/auth">Authentication</a>
+
+	{{if .tweets}}
+	<table class="table table-bordered">
+		<thead>
+			<tr><th>ツイート</th></tr>
+		</thead>
+		<tbody>
+			{{range .tweets}}
+				<tr>
+					<td>{{.Text}}</td>
+				</tr>
+			{{end}}
+		</tbody>
+	</table>
+	{{else}}
+	Not Authenticated
+	{{end}}
+</div>
 
 {{template "footer.html" .}}
 
